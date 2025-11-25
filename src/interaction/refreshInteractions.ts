@@ -1,62 +1,55 @@
-import { Gaia } from "@/bot";
-import { REST, Routes } from "discord.js";
-import fs from "fs";
-import path from "path";
-import { env } from "process";
+import { Gaia } from '@/bot';
+import { REST, Routes } from 'discord.js';
+import fs from 'fs';
+import path from 'path';
+import { env } from 'process';
 
-const isCommandFile = (file: string) =>
-  file.endsWith(".js") || (env.NODE_ENV == "DEV" && file.endsWith(".ts"));
+const isCommandFile = (file: string) => file.endsWith('.js') || (env.NODE_ENV == 'DEV' && file.endsWith('.ts'));
 
-export default async function refreshInteractions(
-  gaia: Gaia,
-  rest: REST,
-  CLIENT_ID: string
-) {
-  gaia.logger.info("Declaring application commands...");
-  const commands = [];
-  const PACKAGES = ["general"];
-  const commandFiles = [
-    {
-      dir: "",
-      files: fs
-        .readdirSync(path.join(__dirname, "/commands"))
-        .filter(isCommandFile),
-    },
-  ];
+export default async function refreshInteractions(gaia: Gaia, rest: REST, CLIENT_ID: string) {
+   gaia.logger.info('Declaring application commands...');
+   const commands = [];
+   const PACKAGES = ['general', 'messages'];
+   const commandFiles = [
+      {
+         dir: '',
+         files: fs.readdirSync(path.join(__dirname, '/commands')).filter(isCommandFile),
+      },
+   ];
 
-  for (const packageString of PACKAGES) {
-    const packageFile = path.join(__dirname, "/commands", packageString);
-    if (fs.existsSync(packageFile)) {
-      commandFiles.push({
-        dir: packageString,
-        files: fs.readdirSync(packageFile).filter(isCommandFile),
-      });
-    }
-  }
-  for (const packageFile of commandFiles) {
-    for (const file of packageFile.files) {
-      const fileRequire = await import(`./commands/${packageFile.dir}/${file}`);
-      const cmdData = fileRequire.default;
-      if (cmdData) {
-        commands.push(cmdData.data);
-        if (gaia.commands) {
-          gaia.commands.set(cmdData.data.name, cmdData);
-        }
+   for (const packageString of PACKAGES) {
+      const packageFile = path.join(__dirname, '/commands', packageString);
+      if (fs.existsSync(packageFile)) {
+         commandFiles.push({
+            dir: packageString,
+            files: fs.readdirSync(packageFile).filter(isCommandFile),
+         });
       }
-    }
-  }
-  rest
-    .put(Routes.applicationCommands(CLIENT_ID), {
-      body: commands,
-    })
-    .then(() => {
-      gaia.logger.info(`Refreshed ${commands.length} application commands.`);
-    })
-    .catch((x) => {
-      gaia.logger.error("! Failed to load commands!");
-      gaia.logger.error(x);
-    });
-  /*
+   }
+   for (const packageFile of commandFiles) {
+      for (const file of packageFile.files) {
+         const fileRequire = await import(`./commands/${packageFile.dir}/${file}`);
+         const cmdData = fileRequire.default;
+         if (cmdData) {
+            commands.push(cmdData.data);
+            if (gaia.commands) {
+               gaia.commands.set(cmdData.data.name, cmdData);
+            }
+         }
+      }
+   }
+   rest
+      .put(Routes.applicationCommands(CLIENT_ID), {
+         body: commands,
+      })
+      .then(() => {
+         gaia.logger.info(`Refreshed ${commands.length} application commands.`);
+      })
+      .catch((x) => {
+         gaia.logger.error('! Failed to load commands!');
+         gaia.logger.error(x);
+      });
+   /*
   TODO: This can be added in as we add context menus, select menus, etc.
   const contextMenuFiles = [
     {
