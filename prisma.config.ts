@@ -9,4 +9,15 @@ export default defineConfig({
    datasource: {
       url: env('DATABASE_URL'),
    },
+   // required when using unstable features
+   experimental: {
+      externalTables: true,
+   },
+   // declare the `users` table and `role` enum as external
+   tables: {
+      external: ['public.account', 'public.user'],
+   },
+   enums: {
+      external: ['public.AccountStatus', 'public.UserRole'],
+   },
 });

@@ -13,7 +13,11 @@ import { ContextMenu } from './types/ContextMenu';
 import refreshInteractions from './interaction/refreshInteractions';
 import { Embeds } from './consts/Embeds';
 import listenEvents from './interaction/listenEvents';
-
+import { PrismaClient } from '@prisma/client';
+import { Pool } from 'pg';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { ToadScheduler } from 'toad-scheduler';
+import scheduleStatusEmbedUpdates from './lib/embeds/scheduleStatusEmbedUpdates';
 const TOKEN = env.DISCORD_BOT_TOKEN;
 const CLIENT_ID = env.DISCORD_BOT_CLIENT_ID;
 
@@ -41,6 +45,10 @@ export class Gaia extends Client {
    commands: Collection<string, Command> = new Collection();
 
    /**
+    * Prisma client used for interacting with database.
+    */
+   database: PrismaClient;
+   /**
     * Collection of buttons registered in Gaia.
     */
    buttons: Collection<string, Button> = new Collection();
@@ -59,6 +67,11 @@ export class Gaia extends Client {
     * Collection of context menus registered in Gaia.
     */
    context_menus: Collection<string, ContextMenu> = new Collection();
+
+   /**
+    * Scheduler for scheduling tasks in Gaia.
+    */
+   scheduler: ToadScheduler = new ToadScheduler();
 
    /**
     * Creates an instance of Gaia, and initializes the instance, using the DISCORD_BOT_TOKEN and DISCORD_BOT_CLIENT_ID
@@ -85,10 +98,22 @@ export class Gaia extends Client {
    /**
     * Initializes the Gaia instance, connecting to the Prisma client, setting up interactions, and listening for events.
     */
+   async connectPrisma() {
+      const pool = new Pool({ connectionString: env.DATABASE_URL });
+      const adapter = new PrismaPg(pool);
+      this.database = new PrismaClient({ adapter });
+
+      try {
+         this.database.$connect().then(() => this.logger.info('Successfully connected to DB!'));
+      } catch (x) {
+         this.logger.error('An error occurred trying to connect to the DB using Prisma!');
+         this.logger.error(x);
+         return undefined;
+      }
+   }
    async init() {
       this.logger.info('Connecting Prisma Client...');
-
-      // await this.connectPrisma();
+      await this.connectPrisma();
       this.logger.info('Declaring client variables...');
       const rest = new REST({
          version: '10',
@@ -100,6 +125,8 @@ export class Gaia extends Client {
       this.login(TOKEN)
          .then(async () => {
             this.updateDiscordStatus(env.DISCORD_STATUS);
+            this.logger.info('Scheduling schedulers...');
+            scheduleStatusEmbedUpdates(this);
          })
          .catch((reason) => {
             this.logger.error('! Error signing into Gaia!');

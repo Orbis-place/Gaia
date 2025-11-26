@@ -1,12 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
+  
 }
 
 datasource db {
@@ -17,7 +11,7 @@ enum MessageType {
   STATUS
 }
 model live_channel_message {
-  message_id    String @id
+  message_location    String @id
   type          String @default("STATUS")
   last_fetched  Json   @default("{}")
 }

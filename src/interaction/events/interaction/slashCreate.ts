@@ -1,7 +1,7 @@
 import { EmbedBuilder, ChatInputCommandInteraction, GuildMember } from 'discord.js';
 import { Gaia } from '@/bot';
 import { Colors } from '@/consts/Colors';
-import { testCommandPermission } from '@/features/permissions/testCommandPermission';
+import { testCommandPermission } from '@/lib/permissions/testCommandPermission';
 
 export default async function slashCreate(gaia: Gaia, interaction: ChatInputCommandInteraction) {
    if (!gaia.commands) return;

@@ -15,6 +15,13 @@ const env = cleanEnv(process.env, {
       desc: "The bot's Discord Status.",
       default: 'Serving Orbis...',
    }),
+   WEBPAGE: str({
+      desc: 'The webpage URL for Orbis.place',
+      default: 'https://orbis.place',
+   }),
+   DATABASE_URL: str({
+      desc: 'The database connection URL for Prisma.',
+   }),
 });
 
 export default env;

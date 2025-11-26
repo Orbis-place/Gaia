@@ -2,6 +2,7 @@ import { Gaia } from '@/bot';
 import { BaseInteraction } from 'discord.js';
 import onReady from './events/client/onReady';
 import slashCreate from './events/interaction/slashCreate';
+import { messageDelete } from './events/message/messageDelete';
 
 export default function listenEvents(gaia: Gaia) {
    gaia.once('clientReady', () => onReady(gaia));
@@ -16,4 +17,5 @@ export default function listenEvents(gaia: Gaia) {
       //else if (interaction.isContextMenuCommand())
       //  contextCreate(gaia, interaction);
    });
+   gaia.on('messageDelete', async (message) => messageDelete(gaia, message));
 }

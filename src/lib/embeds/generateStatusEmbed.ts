@@ -3,13 +3,12 @@ import { CustomEmojis } from '@/consts/CustomEmojis';
 import { StatusData } from '@/types/StatusData';
 import {
    AttachmentBuilder,
+   BaseMessageOptions,
    ButtonBuilder,
    ButtonStyle,
    ContainerBuilder,
    MediaGalleryBuilder,
    MediaGalleryItemBuilder,
-   MessageCreateOptions,
-   MessagePayload,
    SectionBuilder,
    SeparatorBuilder,
    SeparatorSpacingSize,
@@ -18,7 +17,7 @@ import {
 
 const statusImage = new AttachmentBuilder('./src/assets/status.png');
 
-export function generateStatusComponent(statusData: StatusData): MessagePayload | MessageCreateOptions {
+export function generateStatusComponent(statusData: StatusData): BaseMessageOptions {
    const container = new ContainerBuilder()
       .setAccentColor(Colors.DEFAULT)
       .addSectionComponents(
@@ -53,7 +52,6 @@ export function generateStatusComponent(statusData: StatusData): MessagePayload 
 
    return {
       components: [container.toJSON()],
-      flags: [32768], // MessageFlags.IsComponentsV2
       files: [statusImage],
    };
 }

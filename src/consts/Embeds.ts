@@ -6,4 +6,5 @@ export const Embeds = {
       .setColor(Colors.DENIED)
       .setTitle('⛔ Error!')
       .setDescription('An error occurred trying to do this. Try again later!'),
+   SUCCESS: new EmbedBuilder().setColor(Colors.DEFAULT).setTitle('✅ Success!'),
 };
