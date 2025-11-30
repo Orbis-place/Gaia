@@ -1,6 +1,6 @@
 import { Gaia } from '@/bot';
 import { AsyncTask, SimpleIntervalJob } from 'toad-scheduler';
-import { generateStatusComponent } from './generateStatusEmbed';
+import { generateStatusComponent } from './generateStatusComponent';
 import { getCompositeServiceStatus } from '@/dal/status';
 
 export default function scheduleStatusEmbedUpdates(gaia: Gaia) {
@@ -36,7 +36,7 @@ export default function scheduleStatusEmbedUpdates(gaia: Gaia) {
          return true;
       },
       (err) => {
-         console.log('Error occurred in punishment expiration task!');
+         console.log('Error occurred in status embed update task!');
          console.log(err);
       },
    );

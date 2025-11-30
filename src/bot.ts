@@ -17,7 +17,8 @@ import { PrismaClient } from '@prisma/client';
 import { Pool } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { ToadScheduler } from 'toad-scheduler';
-import scheduleStatusEmbedUpdates from './lib/embeds/scheduleStatusEmbedUpdates';
+import scheduleStatusEmbedUpdates from './lib/embeds/status/scheduleStatusComponentUpdates';
+import scheduleRoadmapEmbedUpdates from './lib/embeds/roadmap/scheduleRoadmapComponentUpdate';
 const TOKEN = env.DISCORD_BOT_TOKEN;
 const CLIENT_ID = env.DISCORD_BOT_CLIENT_ID;
 
@@ -127,6 +128,7 @@ export class Gaia extends Client {
             this.updateDiscordStatus(env.DISCORD_STATUS);
             this.logger.info('Scheduling schedulers...');
             scheduleStatusEmbedUpdates(this);
+            scheduleRoadmapEmbedUpdates(this);
          })
          .catch((reason) => {
             this.logger.error('! Error signing into Gaia!');

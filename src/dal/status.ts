@@ -1,4 +1,5 @@
 import { ServiceStatus, StatusData } from '@/types/StatusData';
+import axios from 'axios';
 
 /**
  * Fetches the composite service status for all services.
@@ -16,8 +17,8 @@ export async function getCompositeServiceStatus(): Promise<StatusData | undefine
  * */
 export async function getWebStatus(): Promise<ServiceStatus> {
    try {
-      const res = await fetch('https://orbis.place/', { method: 'GET' });
-      if (res.ok) {
+      const res = await axios.get('https://orbis.place/', { method: 'GET' });
+      if (res.status === 200) {
          return { 0: true };
       } else {
          return { 0: false };
